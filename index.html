@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<img src="1.svg" id="loader" width="292" height="292">
+
+
+<script>
+  let frame = 1;
+  const framerate = 24;
+  const framesCount = 31;
+  const loader = document.getElementById('loader');
+
+  function playSequence() {
+    let interval = setInterval(function () {
+      frame++;
+      loader.src = `${frame}.svg`;
+      if (frame >= framesCount) clearInterval(interval);
+    }, 1000 / framerate);
+  }
+
+  // preload();
+  playSequence();
+
+</script>
+</body>
+</html>
