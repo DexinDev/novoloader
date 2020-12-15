@@ -22,6 +22,12 @@
             right: 0;
             bottom: 0;
             margin: auto;
+            animation: view ease-in 1.5s;
+        }
+
+        @keyframes view {
+            0% {opacity: 0}
+            100% {opacity: 100%}
         }
 
         .controls {
@@ -197,7 +203,11 @@
         let idIterator = 1;
         for (let item of sequenceElement.children) {
           item.id = letter + idIterator;
-          item.classList.add('svg-hidden')
+          if(idIterator != 1){
+            item.classList.add('svg-hidden')
+          } else {
+            item.classList.remove('svg-hidden')
+          }
           idIterator++;
         }
       }
@@ -215,7 +225,8 @@
           newFrame.classList.remove('svg-hidden');
           then = now - (elapsed % fpsInterval);
         }
-        if(framesCount - frame < 12) sequenceElement.style.opacity = (framesCount - frame) / 12;
+        if(framesCount - frame == 10) resolve();
+        if(framesCount - frame < 10) sequenceElement.style.opacity = (framesCount - frame) / 10;
         else sequenceElement.style.opacity = 1;
 
         if (frame < framesCount) requestAnimationFrame(animationStep);
@@ -224,17 +235,19 @@
 
       function stopAnimating() {
         sequenceElement.classList.add('svg-hidden');
-        resolve();
       }
 
 
       function startAnimating() {
-        const fps = document.getElementById('fps').value;
         sequenceElement.classList.remove('svg-hidden');
-        fpsInterval = 1000 / fps;
-        then = Date.now();
-        startTime = then;
-        requestAnimationFrame(animationStep);
+        setTimeout(function() {
+          const fps = document.getElementById('fps').value;
+          fpsInterval = 1000 / fps;
+          then = Date.now();
+          startTime = then;
+          requestAnimationFrame(animationStep);
+        }, 1500)
+
       }
 
       prepareSequence();
