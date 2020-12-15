@@ -10,6 +10,7 @@
     </style>
 </head>
 <body>
+fps <input id="fps" type="number" value="30"><br><br>
 <button onclick="runLetter('n')">N</button><br>
 <button onclick="runLetter('o')">O</button><br>
 <button onclick="runLetter('v')">V</button><br>
@@ -189,7 +190,8 @@
     }
 
 
-    function startAnimating(fps) {
+    function startAnimating() {
+      const fps = document.getElementById('fps').value;
       sequenceElement.classList.remove('svg-hidden');
       fpsInterval = 1000 / fps;
       then = Date.now();
@@ -197,10 +199,8 @@
       requestAnimationFrame(animationStep);
     }
 
-
-
     prepareSequence();
-    startAnimating(30);
+    startAnimating();
   }
 
 
