@@ -194,54 +194,54 @@
 <script>
 
   function runLetter(letter) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve) {
       const sequenceElement = document.getElementById(`sequence-${letter}`);
       const framesCount = sequenceElement.childElementCount;
+      const fadeOutFrames = 10;
+      let frame = 1;
       let fpsInterval, startTime, now, then, elapsed;
 
       function prepareSequence() {
         let idIterator = 1;
         for (let item of sequenceElement.children) {
           item.id = letter + idIterator;
-          if(idIterator != 1){
-            item.classList.add('svg-hidden')
-          } else {
-            item.classList.remove('svg-hidden')
-          }
+          item.classList.add('svg-hidden')
+          if(idIterator == 1) item.classList.remove('svg-hidden')
           idIterator++;
         }
       }
 
-      let frame = 1;
+      function nextFrame() {
+        const oldFrame = document.getElementById(letter + frame);
+        const newFrame = document.getElementById(letter + ++frame);
+        oldFrame.classList.add('svg-hidden');
+        newFrame.classList.remove('svg-hidden');
+      }
+
+      function fadeOut() {
+        sequenceElement.style.opacity = (framesCount - frame) / fadeOutFrames;
+      }
 
       function animationStep() {
         now = Date.now();
         elapsed = now - then;
+
         if (elapsed > fpsInterval) {
-          const oldFrame = document.getElementById(letter + frame);
-          frame++;
-          const newFrame = document.getElementById(letter + frame);
-          oldFrame.classList.add('svg-hidden');
-          newFrame.classList.remove('svg-hidden');
+          nextFrame();
           then = now - (elapsed % fpsInterval);
         }
-        if(framesCount - frame == 10) resolve();
-        if(framesCount - frame < 10) sequenceElement.style.opacity = (framesCount - frame) / 10;
+        if(framesCount - frame < fadeOutFrames) fadeOut();
         else sequenceElement.style.opacity = 1;
 
+        if(framesCount - frame == fadeOutFrames) resolve();
         if (frame < framesCount) requestAnimationFrame(animationStep);
-        else stopAnimating();
-      }
-
-      function stopAnimating() {
-        sequenceElement.classList.add('svg-hidden');
+        else sequenceElement.classList.add('svg-hidden');
       }
 
 
-      function startAnimating() {
+      function startAnimating(fps) {
         sequenceElement.classList.remove('svg-hidden');
         setTimeout(function() {
-          const fps = document.getElementById('fps').value;
           fpsInterval = 1000 / fps;
           then = Date.now();
           startTime = then;
@@ -251,10 +251,9 @@
       }
 
       prepareSequence();
-      startAnimating();
+      startAnimating(30);
     });
   }
-
 
   function playAll() {
     runLetter('n').then(() => {return runLetter('o')}).then(() => {return runLetter('v')}).then(() => {return runLetter('a')});
